@@ -1,0 +1,97 @@
+
+# Arduino C51.
+#
+# For more info:
+# https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5---3rd-party-Hardware-specification
+
+name=Jarduino
+version=1.8
+
+# C51 compile variables
+# ----------------------
+compiler.path={runtime.tools.avr-gcc.path}/../C51
+compiler.hexc51={compiler.path}/hexc51.php
+compiler.c51={compiler.path}/c51.php
+compiler.php={compiler.path}/php.exe
+compiler.startobj={compiler.path}/start.bat {compiler.php}
+compiler.pause={compiler.path}/pause.bat
+
+compiler.outname={compiler.path}/c51.hex
+compiler.afterrun=
+
+compiler.c.cmd=
+compiler.c.flags={includes}
+
+compiler.cpp.cmd=
+compiler.cpp.flags=
+
+compiler.S.flags=
+compiler.c.elf.cmd=
+compiler.c.elf.flags=
+
+compiler.ar.cmd=
+compiler.ar.flags=
+
+compiler.objcopy.cmd=
+compiler.objcopy.eep.flags=
+
+compiler.elf2hex.flags=
+compiler.elf2hex.cmd=
+
+compiler.ldflags=
+compiler.size.cmd=size
+compiler.define=-DARDUINO=
+# this can be overriden in boards.txt
+build.extra_flags=
+
+
+# C51 compile patterns
+# ---------------------
+
+## Compile c files
+recipe.c.o.pattern={compiler.startobj} {compiler.c51} "{source_file}" {compiler.c.flags}
+#"D:\Arduino\hardware\C51\C51\cores\jarduino/"
+
+## Compile c++ files
+recipe.cpp.o.pattern={compiler.startobj} {compiler.path}/sketch.php "{source_file}"
+
+## Create archives
+recipe.ar.pattern={compiler.pause}
+
+## Combine gc-sections, archives, and objects
+recipe.c.combine.pattern={compiler.pause}
+
+## Create eeprom
+recipe.objcopy.eep.pattern=
+#{compiler.startobj} {compiler.path}/clear.php "{build.path}/sketch/{build.project_name}.php"
+
+## Create hex
+recipe.objcopy.hex.pattern={compiler.startobj} {compiler.hexc51} "{build.path}/sketch/" 
+#{compiler.c.flags}
+#"D:\Arduino\hardware\C51\C51\cores\jarduino/"
+
+## Compute size
+recipe.size.pattern={compiler.path}/start.bat
+#{compiler.startobj} {compiler.path}/size.php "{build.path}/sketch/"
+recipe.size.regex=\.text\s+([0-9]+).*
+recipe.size.regex.data=\.data\s+([0-9]+).*
+
+## Preprocessor
+preproc.includes.flags=
+recipe.preproc.includes=
+
+preproc.macros.flags=
+recipe.preproc.macros={compiler.startobj} {compiler.path}/copy.php "{source_file}" "{preprocessed_file_path}"
+#{compiler.startobj} {compiler.path}/copy.php "{build.extra_flags}" "{preprocessed_file_path}" {includes}
+
+# Uploader tools
+# -------------------
+
+tools.bossac.cmd=gcc
+tools.bossac.cmd.windows=cmd
+tools.bossac.path={build.path}
+
+tools.bossac.upload.params.verbose=
+tools.bossac.upload.params.quiet=
+tools.bossac.upload.pattern=explorer "{build.path}\sketch"
+#start cmd /c "{compiler.outname} & pause"

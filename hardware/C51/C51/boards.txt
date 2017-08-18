@@ -1,0 +1,16 @@
+
+C51.name=C51 通用 
+C51.vid.0=0x2341
+C51.pid.0=0x003d
+
+C51.upload.tool=bossac
+C51.upload.protocol=arduino
+C51.upload.maximum_size=2000000
+C51.upload.native_usb=true
+
+C51.build.mcu=8051
+C51.build.f_cpu=1L
+C51.build.usb_product="8051"
+C51.build.core=jarduino
+C51.build.variant=C51
+C51.build.board=C51
